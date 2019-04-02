@@ -1,0 +1,16 @@
+version: '2'
+services:
+  composer:
+    image: "composer:1.8.4"
+  php-fpm:
+    image: "php:7.2.16-fpm-stretch"
+    volumes:
+      - ./blog:/var/www/html/blog
+  nginx:
+    image: "nginx:1.15.10"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "3000:80"
+    links:
+      - php-fpm

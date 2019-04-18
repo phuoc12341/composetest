@@ -16,7 +16,7 @@ class PostController extends Controller
     {
         $listPosts = Post::all();
 
-        return view('show_post', ['listPosts' => $listPosts]);
+        return view('index', ['listPosts' => $listPosts]);
     }
 
     /**
@@ -42,7 +42,7 @@ class PostController extends Controller
             'content' => $request->content,
         ]);
 
-        return redirect('/home');
+        return redirect(route('posts.index'));
     }
 
     /**
@@ -51,7 +51,7 @@ class PostController extends Controller
      * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function show(Post $post)
+    public function show($postId)
     {
         //
     }
@@ -62,9 +62,11 @@ class PostController extends Controller
      * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function edit(Post $post)
+    public function edit($postId)
     {
-        //
+        $post = Post::find($postId);
+
+        return view('edit', ['post' => $post]);
     }
 
     /**
@@ -74,9 +76,16 @@ class PostController extends Controller
      * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
+    public function update(Request $request, $postId)
     {
-        //
+        $post = Post::find($postId);
+
+        $post->title = $request->title;
+        $post->content = $request->content;
+
+        $post->save();
+
+        return redirect(route('posts.index'));
     }
 
     /**
@@ -85,8 +94,12 @@ class PostController extends Controller
      * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Post $post)
+    public function destroy($postId)
     {
-        //
+        $post = Post::find($postId);
+
+        $post->delete();
+
+        return redirect(route('posts.index'));
     }
 }

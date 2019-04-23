@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Post;
 use Illuminate\Http\Request;
+use App\Http\Requests\StorePostRequest;
+use Illuminate\Http\UploadedFile;
 
 class PostController extends Controller
 {
@@ -35,8 +37,21 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StorePostRequest $request)
     {
+        if ($request->hasFile('postFile')) {
+            if ($request->file('postFile')->isValid()) {
+                $path = $request->file('postFile')->store('posts');
+                $post = Post::create([
+                    'title' => $request->title,
+                    'content' => $request->content,
+                    'image' => $path,
+                ]);
+
+            return redirect('/home');
+            }
+        }
+
         $post = Post::create([
             'title' => $request->title,
             'content' => $request->content,

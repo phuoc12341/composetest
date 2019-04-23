@@ -10,6 +10,8 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 use Illuminate\Routing\Redirector;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\UploadedFile;
+use App\Http\Controllers\PostController;
 
 class CreateEditPostRequestTest extends TestCase
 {
@@ -30,7 +32,7 @@ class CreateEditPostRequestTest extends TestCase
         try {
             $request->validateResolved();
         } catch(ValidationException $e) {
-            $this->assertValidatorExceptionContainErrorMsg($e, 'A title is required');
+            $this->assertValidatorExceptionContainErrorMsg($e, __('messages.contentRequired'));
         }
     }
 
@@ -51,7 +53,102 @@ class CreateEditPostRequestTest extends TestCase
         try {
             $request->validateResolved();
         } catch(ValidationException $e) {
-            $this->assertValidatorExceptionContainErrorMsg($e, 'A content is required');
+            $this->assertValidatorExceptionContainErrorMsg($e, __('messages.titleRequired'));
+        }
+    }
+
+    public function testCreatePostRequestWithNullBothTitleAndContent()
+    {
+        $data = [
+            'title' => '',
+            'content' => '',
+        ];
+
+        $request = new StorePostRequest();
+
+        $request->setContainer($this->app)->setRedirector($this->app->make(Redirector::class));
+        $this->app->instance('request', $request);
+
+        $request->headers->set('content-type', 'application/json');
+        $request->setJson(new ParameterBag($data));
+        try {
+            $request->validateResolved();
+        } catch(ValidationException $e) {
+            $this->assertValidatorExceptionContainErrorMsg($e, __('messages.titleRequired'));
+            $this->assertValidatorExceptionContainErrorMsg($e, __('messages.contentRequired'));
+        }
+    }
+
+    public function testStoreWithUploadFileMimesException()
+    {
+        $controller = new PostController();
+        $request = new StorePostRequest();
+
+        $data = [
+            'title' => 'dfhf',
+            'content' => 'dvghdgbn',
+            'postFile' => UploadedFile::fake()->create('test.txt', 1000),
+        ];
+
+        $request->setContainer($this->app)->setRedirector($this->app->make(Redirector::class));
+        $this->app->instance('request', $request);
+
+        $request->headers->set('content-type', 'application/json');
+        $request->setJson(new ParameterBag($data));
+
+        try {
+            $request->validateResolved();
+        } catch(ValidationException $e) {
+            $this->assertValidatorExceptionContainErrorMsg($e, __('messages.postFileMimes'));
+        }
+    }
+
+    public function testStoreWithUploadFileSuccessful()
+    {
+        $controller = new PostController();
+        $request = new StorePostRequest();
+
+        $data = [
+            'title' => 'dfhf',
+            'content' => 'dvghdgbn',
+            'postFile' => UploadedFile::fake()->create('test.jpg', 1024),
+        ];
+
+        $request->setContainer($this->app)->setRedirector($this->app->make(Redirector::class));
+        $this->app->instance('request', $request);
+
+        $request->headers->set('content-type', 'application/json');
+        $request->setJson(new ParameterBag($data));
+
+        try {
+            $request->validateResolved();
+            $this->assertTrue(true);
+        } catch(ValidationException $e) {
+            $this->assertTrue(false);
+        }
+    }
+
+    public function testStoreWithUploadOverloadFileExeption()
+    {
+        $controller = new PostController();
+        $request = new StorePostRequest();
+
+        $data = [
+            'title' => 'dfhf',
+            'content' => 'dvghdgbn',
+            'postFile' => UploadedFile::fake()->create('test.jpg', 2000),
+        ];
+
+        $request->setContainer($this->app)->setRedirector($this->app->make(Redirector::class));
+        $this->app->instance('request', $request);
+
+        $request->headers->set('content-type', 'application/json');
+        $request->setJson(new ParameterBag($data));
+
+        try {
+            $request->validateResolved();
+        } catch(ValidationException $e) {
+            $this->assertValidatorExceptionContainErrorMsg($e, __('messages.postFileMax'));
         }
     }
 }

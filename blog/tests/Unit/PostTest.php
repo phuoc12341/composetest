@@ -33,6 +33,38 @@ class PostTest extends TestCase
         $request->setJson(new ParameterBag($data));
 
         $view = $controller->store($request);
-        $this->assertEquals(route('home'), $view->headers->get('Location'));
+        $this->assertEquals(route('posts.index'), $view->headers->get('Location'));
+    }
+
+    public function testUpdatePost()
+    {
+        $request = new Request();
+        $controller = new PostController();
+
+        $controller->index($request);
+
+        $data = [
+            'title' => 'Gia vang',
+            'content' => 'Dang giam',
+        ];
+
+        $request->headers->set('content-type', 'application/json');
+        $request->setJson(new ParameterBag($data));
+
+        $view = $controller->update($request, 2);
+        $this->assertEquals(route('posts.index'), $view->headers->get('Location'));
+    }
+
+    function testDeletePost()
+    {
+        $request = new Request();
+        $controller = new PostController();
+
+        $controller->index($request);
+
+        $request->headers->set('content-type', 'application/json');
+
+        $view = $controller->destroy(5);
+        $this->assertEquals(route('posts.index'), $view->headers->get('Location'));
     }
 }

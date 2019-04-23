@@ -26,7 +26,7 @@ class StorePostRequest extends FormRequest
         return [
             'title' => 'required|unique:posts,title|max:255',
             'content' => 'required',
-            'postFile' => 'mimes:jpeg,bmp,png,jpg',
+            'postFile' => 'mimes:jpeg,bmp,png,jpg|max:1024',
         ];
     }
 
@@ -38,8 +38,10 @@ class StorePostRequest extends FormRequest
     public function messages()
     {
         return [
-            'title.required' => 'A title is required',
-            'content.required'  => 'A content is required',
+            'title.required' => __('messages.titleRequired'),
+            'content.required'  => __('messages.contentRequired'),
+            'postFile.max'  => __('messages.postFileMax'),
+            'postFile.mimes'  => __('messages.postFileMimes'),
         ];
     }
 }

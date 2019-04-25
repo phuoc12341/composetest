@@ -21,6 +21,15 @@ window.Vue = require('vue');
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('my-component', require('./components/MyComponent.vue').default);
+Vue.component('test2-component', require('./components/Test2Component.vue').default);
+
+Vue.component('parent-todo-item-component', require('./components/ParentToDoItem.vue').default);
+
+Vue.component('todo-item', {
+	props: ['todo'],
+	template: '<li>{{ todo.text }}</li>'
+});
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -29,5 +38,17 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
  */
 
 const app = new Vue({
-    el: '#app'
+    el: '#app',
+});
+
+var app2 = new Vue({
+	el: '#test'
+});
+
+var app3 = new Vue({
+  el: '#test2'
+});
+
+var app7 = new Vue({
+  el: '#parent-todo-item-component',
 });

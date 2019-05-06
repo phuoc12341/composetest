@@ -12,33 +12,31 @@
                 </div>
             </div>
             <div class="col-2 text-center">
-                <button class="btn btn-primary" @click="showOrHiddenFormUpdatePost(post.id)">Update</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" @click="$emit('showModalUpdatePost', {createOrUpdate: 'update', id: post.id})">
+                  Update
+                </button>
             </div>
             <div class="col-2 text-center">
                 <button class="btn btn-danger" @click="deletePost(post.id)">Delete</button>
             </div>
         </div>
-
-        <UpdatePostComponent v-if="showFormUpdatePost" :postWantUpdate="postWantUpdate" @updatePost="updatePost"></UpdatePostComponent>
     </div>
 </template>
 
 <script>
-    import UpdatePostComponent from './UpdatePostComponent.vue'
     export default {
         mounted() {
             console.log('Component mounted.')
         },
 
         components: {
-            UpdatePostComponent,
+
         },
 
         data () {
           return {
             listPosts: [],
             showFormUpdatePost: false,
-            postWantUpdate: null,
           };
         },
 
@@ -49,12 +47,18 @@
         props: {
             lastPost: {
                 type: Object
+            },
+            postUpdated: {
+                type: Object
             }
         },
 
         watch: {
           lastPost () {
             this.listPosts.push(this.lastPost);
+          },
+          postUpdated () {
+            this.updateListPostWhenPostUpdated(this.postUpdated);
           }
         },
 
@@ -83,34 +87,10 @@
                 console.log(error);
               });
           },
-          showOrHiddenFormUpdatePost (id) {
-            this.showFormUpdatePost = !this.showFormUpdatePost;
-
-            axios.get(laroute.route('posts.edit', {'post' : id}))
-              .then( response => {
-                if (response.status == 200) {
-                    this.postWantUpdate = response.data.postWantUpdate;
-                }
-              })
-              .catch(function (error) {
-                console.log(error);
-              });
-          },
-          updatePost (post) {
-            axios.patch(laroute.route('posts.update', {'post' : post.id}), {
-                'title': post.title,
-                'content': post.content,
-            })
-              .then( response => {
-                if (response.status == 200) {
-                    this.listPosts.findIndex((post) => post.id == response.data.newPost.id);
-                    this.listPosts.splice(this.listPosts.findIndex((post) => post.id == response.data.newPost.id), 1, response.data.newPost);
-                }
-              })
-              .catch(function (error) {
-                console.log(error);
-              });
-          },
+          updateListPostWhenPostUpdated(postUpdated) {
+            this.listPosts.findIndex((post) => post.id == postUpdated.id);
+            this.listPosts.splice(this.listPosts.findIndex((post) => post.id == postUpdated.id), 1, postUpdated);
+          }
         }
     }
 </script>

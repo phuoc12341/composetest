@@ -18,7 +18,8 @@ class PostController extends Controller
     {
         $listPosts = Post::all();
 
-        return view('index', ['listPosts' => $listPosts]);
+        // return view('index', ['listPosts' => $listPosts]);
+        return response()->json(['listPosts' => $listPosts], 200);
     }
 
     /**
@@ -81,7 +82,8 @@ class PostController extends Controller
     {
         $post = Post::find($postId);
 
-        return view('edit', ['post' => $post]);
+        // return view('edit', ['post' => $post]);
+        return response()->json(['result' => 'success', 'postWantUpdate' => $post], 200);
     }
 
     /**
@@ -100,7 +102,8 @@ class PostController extends Controller
 
         $post->save();
 
-        return redirect(route('posts.index'));
+        // return redirect(route('posts.index'));
+        return response()->json(['result' => 'success', 'newPost' => $post], 200);
     }
 
     /**
@@ -115,6 +118,7 @@ class PostController extends Controller
 
         $post->delete();
 
-        return redirect(route('posts.index'));
+        // return redirect(route('posts.index'));
+        return response()->json(['result' => 'success'], 200);
     }
 }

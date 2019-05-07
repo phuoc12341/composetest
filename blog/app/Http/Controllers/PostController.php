@@ -49,7 +49,8 @@ class PostController extends Controller
                     'image' => $path,
                 ]);
 
-            return redirect('/home');
+            // return redirect('/home');
+            return response()->json(['result' => 'success', 'newPostCreated' => $post], 200);
             }
         }
 
@@ -58,7 +59,8 @@ class PostController extends Controller
             'content' => $request->content,
         ]);
 
-        return redirect(route('posts.index'));
+        // return redirect(route('posts.index'));
+        return response()->json(['result' => 'success', 'newPostCreated' => $post], 200);
     }
 
     /**

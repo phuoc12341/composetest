@@ -9,28 +9,27 @@
                     <hr>
                 </div>
 
-                <div class="form-group">
-                    <label>Title</label>
-                    <input type="text" class="form-control" placeholder="Enter title" name="title" v-model="posts.title">
-                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
-                </div>
-                <div class="form-group">
-                    <label>Content</label>
-                    <textarea class="form-control" placeholder="Content" name="content" v-model="posts.content"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="postFile">File for post</label>
-                    <input type="file" class="form-control-file" id="postFile" name="postFile">
-                </div>
-                <button type="submit" class="btn btn-primary" @click="createPost">Submit</button>
+                <h1>{{ $t('welcomeMsg') }}</h1>
+                
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" @click="createOrUpdate = {createOrUpdate: 'create'}">
+                  Create Post
+                </button>
+
+                <ModalComponent :createOrUpdate="createOrUpdate" @showLastPostCreated="lastPost = $event" @updateListPost="postUpdated = $event"></ModalComponent>
+
             </div>
-            <ShowPostComponent :lastPost="lastPost"></ShowPostComponent>
+
+
+
+            <ShowPostComponent :lastPost="lastPost" @showModalUpdatePost="showModalUpdatePost($event)" :postUpdated=" postUpdated"></ShowPostComponent>
         </div>
     </div>
 </template>
 
 <script>
     import ShowPostComponent from './ShowPostComponent.vue'
+    import Common from '../services/common.js'
+    import ModalComponent from './ModalComponent.vue'
 
     export default {
         mounted() {
@@ -39,10 +38,13 @@
 
         components: {
             ShowPostComponent,
+            ModalComponent,
         },
 
         data () {
           return {
+            createOrUpdate: null,
+            postUpdated: null,
             posts: {
                title: '',
                 content: '', 
@@ -53,7 +55,8 @@
         },
 
         methods: {
-          createPost () {
+          createPost (data) {
+            Common.create(this.createUrl, data)
             axios.post(laroute.route('posts.store'), {
                 title: this.posts.title,
                 content: this.posts.content,
@@ -71,6 +74,9 @@
                     this.errors.push(error.response.data.errors.content)
                 }
               });
+            },
+            showModalUpdatePost (updateFormData) {
+                this.createOrUpdate = updateFormData
             }
         }
     }

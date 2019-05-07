@@ -7,6 +7,17 @@
 
 require('./bootstrap');
 
+import Vue from 'vue';
+import VueI18n from 'vue-i18n';
+import messages from './i18n.js';
+
+Vue.use(VueI18n);
+
+window.i18n = new VueI18n({
+    locale: window.locale,
+    messages
+})
+
 window.Vue = require('vue');
 
 window.axios.defaults.headers.common = {
@@ -35,5 +46,5 @@ Vue.component('create-post-component', require('./components/CreatePostComponent
  */
 
 const app = new Vue({
-    el: '#app'
-});
+    i18n
+}).$mount('#app');

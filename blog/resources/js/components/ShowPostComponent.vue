@@ -64,6 +64,7 @@
 
         methods: {
           showListPost () {
+            console.log('test')
             axios.get(laroute.route('posts.index'))
               .then( response => {
                 this.listPosts = response.data.listPosts;

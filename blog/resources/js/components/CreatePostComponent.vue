@@ -19,8 +19,6 @@
 
             </div>
 
-
-
             <ShowPostComponent :lastPost="lastPost" @showModalUpdatePost="showModalUpdatePost($event)" :postUpdated=" postUpdated"></ShowPostComponent>
         </div>
     </div>
@@ -56,7 +54,6 @@
 
         methods: {
           createPost (data) {
-            Common.create(this.createUrl, data)
             axios.post(laroute.route('posts.store'), {
                 title: this.posts.title,
                 content: this.posts.content,
